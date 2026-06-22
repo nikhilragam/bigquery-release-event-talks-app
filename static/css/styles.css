@@ -56,6 +56,25 @@ body {
     position: relative;
 }
 
+/* Smooth transitions for theme switching */
+body, 
+.glass, 
+.pill, 
+.btn, 
+.search-box, 
+.update-card, 
+.toast, 
+.tweet-input, 
+.update-preview-box, 
+pre, 
+code {
+    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Background Ambient Glows */
 .bg-glow {
     position: fixed;
@@ -1070,22 +1089,23 @@ body {
     transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
 }
 
-.icon-sun {
+.icon-moon {
     transform: translateY(0) rotate(0);
+    opacity: 1;
 }
 
-.icon-moon {
+.icon-sun {
     position: absolute;
     transform: translateY(40px) rotate(90deg);
     opacity: 0;
 }
 
-body.light-theme .icon-sun {
+body.light-theme .icon-moon {
     transform: translateY(-40px) rotate(-90deg);
     opacity: 0;
 }
 
-body.light-theme .icon-moon {
+body.light-theme .icon-sun {
     transform: translateY(0) rotate(0);
     opacity: 1;
 }
