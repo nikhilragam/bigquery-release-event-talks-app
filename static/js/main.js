@@ -18,6 +18,8 @@ const resultsCount = document.getElementById('results-count');
 const lastUpdatedTime = document.getElementById('last-updated-time');
 const onlineIndicator = document.getElementById('online-indicator');
 const btnResetFilters = document.getElementById('btn-reset-filters');
+const themeToggle = document.getElementById('theme-toggle');
+const btnExportCSV = document.getElementById('btn-export-csv');
 
 // Modal Elements
 const tweetModal = document.getElementById('tweet-modal');
@@ -40,6 +42,7 @@ progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
 
 // Initialize on Load
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     fetchUpdates();
     setupEventListeners();
 });
@@ -48,6 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupEventListeners() {
     // Refresh Button
     btnRefresh.addEventListener('click', fetchUpdates);
+    
+    // Theme Toggle Button
+    themeToggle.addEventListener('click', toggleTheme);
+    
+    // Export CSV Button
+    btnExportCSV.addEventListener('click', exportToCSV);
     
     // Search input typing
     searchInput.addEventListener('input', (e) => {
@@ -297,12 +306,35 @@ function createCardElement(update) {
             ${update.html}
         </div>
         <div class="card-footer">
+            <button class="btn btn-secondary btn-copy-card" aria-label="Copy update to clipboard">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copy</span>
+            </button>
             <button class="btn btn-secondary btn-share-tweet" aria-label="Compose tweet about this update">
                 <i class="fa-brands fa-x-twitter"></i>
                 <span>Tweet this</span>
             </button>
         </div>
     `;
+    
+    // Add Copy button event listener
+    const btnCopy = card.querySelector('.btn-copy-card');
+    btnCopy.addEventListener('click', () => {
+        navigator.clipboard.writeText(update.text).then(() => {
+            showToast("Copied content to clipboard!", "success");
+            const icon = btnCopy.querySelector('i');
+            const textSpan = btnCopy.querySelector('span');
+            icon.className = 'fa-solid fa-check';
+            textSpan.innerText = 'Copied';
+            setTimeout(() => {
+                icon.className = 'fa-regular fa-copy';
+                textSpan.innerText = 'Copy';
+            }, 2000);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            showToast("Failed to copy text.", "error");
+        });
+    });
     
     // Add Share button event listener
     const btnShare = card.querySelector('.btn-share-tweet');
@@ -485,4 +517,62 @@ function showToast(message, type = 'info') {
             toast.remove();
         }, 300);
     }, 4500);
+}
+
+// Theme Manager Utilities
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+    } else {
+        document.body.classList.remove('light-theme');
+    }
+}
+
+function toggleTheme() {
+    if (document.body.classList.contains('light-theme')) {
+        document.body.classList.remove('light-theme');
+        localStorage.setItem('theme', 'dark');
+        showToast("Switched to dark mode", "info");
+    } else {
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+        showToast("Switched to light mode", "info");
+    }
+}
+
+// Export Filtered Release Notes to CSV File
+function exportToCSV() {
+    if (filteredUpdates.length === 0) {
+        showToast("No release notes available to export.", "error");
+        return;
+    }
+    
+    const headers = ["Date", "Type", "Description"];
+    const rows = filteredUpdates.map(update => [
+        update.formatted_date || update.date,
+        update.type,
+        update.text
+    ]);
+    
+    const csvContent = [
+        headers.join(","),
+        ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(","))
+    ].join("\n");
+    
+    try {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `bigquery_release_notes_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast(`Exported ${filteredUpdates.length} updates successfully!`, "success");
+    } catch (error) {
+        console.error("Export error: ", error);
+        showToast("Failed to export CSV file.", "error");
+    }
 }

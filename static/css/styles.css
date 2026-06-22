@@ -6,6 +6,7 @@
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
+    --glow-opacity: 0.15;
     
     /* Glowing accents */
     --accent-blue: #3b82f6;
@@ -24,6 +25,19 @@
     
     --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+}
+
+body.light-theme {
+    --bg-primary: #f8fafc;
+    --bg-secondary: rgba(241, 245, 249, 0.7);
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --glow-opacity: 0.05;
+    --glass-border: rgba(15, 23, 42, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.04);
+    --glow-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
 }
 
 * {
@@ -49,7 +63,7 @@ body {
     height: 600px;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.15;
+    opacity: var(--glow-opacity);
     pointer-events: none;
     z-index: -1;
 }
@@ -71,7 +85,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
-    opacity: 0.08;
+    opacity: calc(var(--glow-opacity) * 0.5);
     width: 800px;
     height: 800px;
 }
@@ -1021,6 +1035,179 @@ body {
     margin-top: auto;
 }
 
+/* Action Area layout */
+.action-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.15rem;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+}
+
+.icon-sun {
+    transform: translateY(0) rotate(0);
+}
+
+.icon-moon {
+    position: absolute;
+    transform: translateY(40px) rotate(90deg);
+    opacity: 0;
+}
+
+body.light-theme .icon-sun {
+    transform: translateY(-40px) rotate(-90deg);
+    opacity: 0;
+}
+
+body.light-theme .icon-moon {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+}
+
+/* Card Button layouts */
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Light Theme Overrides */
+body.light-theme .logo-text h1 {
+    background: linear-gradient(to right, #0f172a, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+body.light-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+body.light-theme .search-box {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .search-box:focus-within {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+body.light-theme .pill {
+    background: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .pill:hover {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-theme .pill-count {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .btn-secondary {
+    background: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: var(--text-primary);
+}
+
+body.light-theme .btn-secondary:hover {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.15);
+}
+
+body.light-theme .theme-toggle-btn {
+    background: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .theme-toggle-btn:hover {
+    background: rgba(15, 23, 42, 0.06);
+    border-color: rgba(15, 23, 42, 0.15);
+}
+
+body.light-theme .skeleton-card::before {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.03) 50%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+body.light-theme .update-preview-box,
+body.light-theme .tweet-input,
+body.light-theme .card-body code {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .card-body code {
+    color: #0f172a;
+}
+
+body.light-theme .card-body pre {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .card-body pre code {
+    color: inherit;
+}
+
+body.light-theme .modal-overlay {
+    background: rgba(248, 250, 252, 0.85);
+}
+
+body.light-theme .toast {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.08);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+}
+
+body.light-theme .tag-pill {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: rgba(15, 23, 42, 0.05);
+}
+
+body.light-theme .tag-pill:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent-blue);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .header-content {
@@ -1030,6 +1217,13 @@ body {
     
     .action-area {
         display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    
+    .theme-toggle-btn {
+        width: 48px;
+        height: 48px;
     }
     
     .btn {
